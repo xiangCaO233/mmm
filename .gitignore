@@ -1,0 +1,17 @@
+# 忽略目录
+/CMakeFiles
+/MakeFile
+/.cache
+/.qt
+/plugin
+/mmm_autogen
+/build
+/primaryrender_autogen
+
+# 忽略文件
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+*.DS_Store
+
+
