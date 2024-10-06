@@ -21,6 +21,9 @@ public:
   // 画板插件列表
   std::vector<ICanvasRender *> plugins;
 
+  // 插件信息列表
+  std::vector<std::unordered_map<std::string, std::string>> pluginInfos;
+
 protected:
   void paintEvent(QPaintEvent *event) override;
 };

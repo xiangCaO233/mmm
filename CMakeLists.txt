@@ -25,7 +25,8 @@ set(SOURCES
     src/mobj/note/Slide.cpp
     src/mobj/note/MixNote.cpp
     headers/plugin/ICanvasRender.cpp
-    src/wgt/Canvas.cpp)
+    src/wgt/Canvas.cpp
+    src/map/meta/BaseMeta.cpp)
 
 find_package(
   Qt6
@@ -47,7 +48,8 @@ endif()
 # 设置插件输出路径
 set(PLUGIN_OUTPUT_DIR ${CMAKE_BINARY_DIR}/plugin)
 # 插件源文件设置
-set(primaryrender_SRC headers/plugin/ICanvasRender.cpp src/plugin/CanvasPrimaryRender/CanvasPrimaryRender.cpp)
+set(primaryrender_SRC headers/plugin/ICanvasRender.cpp
+                      src/plugin/CanvasPrimaryRender/CanvasPrimaryRender.cpp)
 # 可执行文件
 add_executable(mmm ${SOURCES})
 
@@ -71,6 +73,7 @@ foreach(PLUGIN ${PLUGINS})
                ${PLUGIN_OUTPUT_DIR} # macOS和Linux上用于.dylib或.so
                ARCHIVE_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIR} # 静态库的输出路径
   )
-  target_include_directories(${PLUGIN} PUBLIC src/plugin/${${PLUGIN}} headers/plugin)
+  target_include_directories(${PLUGIN} PUBLIC src/plugin/${${PLUGIN}}
+                                              headers/plugin)
   target_link_libraries(${PLUGIN} PRIVATE Qt::Core Qt::Gui Qt::Widgets)
 endforeach()

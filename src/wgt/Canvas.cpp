@@ -1,8 +1,9 @@
 #include "../../headers/wgt/Canvas.h"
 #include "../../headers/log/Logger.h"
 #include "plugin/ICanvasRender.h"
-#include <algorithm>
+#include <QJsonDocument>
 #include <string>
+#include <unordered_map>
 
 Canvas::Canvas(Mmap *map) : currentMap(map) {
   // 加载插件
@@ -13,24 +14,39 @@ Canvas::Canvas(Mmap *map) : currentMap(map) {
   foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
     QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
     QObject *plugin = loader.instance();
+    QFileInfo fileInfo(fileName);
+    QString name = pluginsDir.absoluteFilePath(fileInfo.baseName());
     if (plugin) {
       // 插件加载成功
       LOG_SUCCESS("插件[" + fileName.toStdString() + "]加载成功");
       ICanvasRender *renderPlugin = qobject_cast<ICanvasRender *>(plugin);
       if (renderPlugin) {
-        // 加载渲染插件成功
-        string dot = ".";
-        string name = fileName.toStdString();
-        auto pos =
-            std::find_end(name.begin(), name.end(), dot.begin(), dot.end());
-        if (pos != name.end()) {
-          name.erase(pos, name.end());
-        }
-        LOG_SUCCESS("成功读取渲染插件[" + name + "]");
-        plugins.push_back(renderPlugin); // 将插件添加到列表中
+        // 将插件添加到列表中
+        plugins.push_back(renderPlugin);
+        // 传递指针
         renderPlugin->sendCanvas(this);
+        // 读取插件信息
+        QString jsonFilePath = pluginsDir.absoluteFilePath(
+            "json/" + fileInfo.baseName() + ".json");
+        QFile jsonFile(jsonFilePath);
+        if (jsonFile.open(QIODevice::ReadOnly)) {
+          QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonFile.readAll());
+          QJsonObject jsonObj = jsonDoc.object();
+          QString pluginName = jsonObj["name"].toString();
+          QString pluginVersion = jsonObj["version"].toString();
+          // 初始化插件信息
+          std::unordered_map<std::string, std::string> plugInfo;
+          plugInfo["name"] = pluginName.toStdString();
+          plugInfo["version"] = pluginVersion.toStdString();
+          pluginInfos.push_back(plugInfo);
+          // 成功加载插件
+          LOG_SUCCESS("成功加载插件:[" + pluginName.toStdString() + " v" +
+                      pluginVersion.toStdString() + "]");
+        } else {
+          LOG_ERROR(jsonFilePath.toStdString() + "读取失败");
+        }
       } else {
-        LOG_ERROR("非法渲染插件[" + fileName.toStdString() + "]");
+        LOG_ERROR("非法渲染插件[" + name.toStdString() + "]");
       }
     } else {
       // 插件加载失败

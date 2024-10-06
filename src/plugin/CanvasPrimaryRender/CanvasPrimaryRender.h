@@ -9,7 +9,7 @@
 // 主渲染插件
 class CanvasPrimaryRender : public ICanvasRender {
   Q_OBJECT
-  Q_PLUGIN_METADATA(IID ICanvasRender_iid FILE "primary_render.json")
+  Q_PLUGIN_METADATA(IID ICanvasRender_iid)
   Q_INTERFACES(ICanvasRender)
 protected:
   Canvas *canvas;
@@ -19,7 +19,6 @@ public:
   ~CanvasPrimaryRender() override;
   void sendCanvas(Canvas *c) override;
   void render(QPainter *p) override;
-  std::string name() override;
 };
 
 #endif // MMM_CANVASPRIMARYRENDER_H
