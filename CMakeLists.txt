@@ -6,11 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC TRUE)
 set(CMAKE_AUTORCC TRUE)
 set(CMAKE_AUTOUIC TRUE)
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# 添加相对目录宏定义(日志)
 add_definitions(-DPROJECT_DIR=\"${CMAKE_SOURCE_DIR}\")
 
+# 可执行文件头文件目录
 set(INCLUDES headers/)
+# 可执行文件源文件
 set(SOURCES
     src/main.cpp
     src/wgt/MainWidget.cpp
@@ -24,17 +27,21 @@ set(SOURCES
     src/mobj/note/Hold.cpp
     src/mobj/note/Slide.cpp
     src/mobj/note/MixNote.cpp
-    headers/plugin/ICanvasRender.cpp
-    src/wgt/Canvas.cpp
-    src/map/meta/BaseMeta.cpp)
+    headers/plugin/RenderPlugin.cpp
+    headers/plugin/MetaPlugin.cpp
+    src/wgt/Canvas.cpp)
 
 find_package(
   Qt6
   COMPONENTS Core Gui Widgets
   REQUIRED)
-
-# 插件列表
-set(PLUGINS primaryrender)
+# 插件类型
+set(PLUGINTYPES RenderPlugin MetaPlugin)
+# 插件定义
+set(RenderPlugin_PLUGINS CanvasPrimaryRender)
+set(MetaPlugin_PLUGINS ImdMetaData)
+# 设置输出目录的根路径
+set(OUTPUT_ROOT_DIR "${CMAKE_BINARY_DIR}/plugin")
 
 # 判断操作系统
 if(WIN32)
@@ -45,35 +52,40 @@ else()
   set(LIBRARY_SUFFIX ".so") # Linux or other Unix-like OS
 endif()
 
-# 设置插件输出路径
-set(PLUGIN_OUTPUT_DIR ${CMAKE_BINARY_DIR}/plugin)
-# 插件源文件设置
-set(primaryrender_SRC headers/plugin/ICanvasRender.cpp
-                      src/plugin/CanvasPrimaryRender/CanvasPrimaryRender.cpp)
+# 循环遍历每个类别
+foreach(PLUGINTYPE IN LISTS PLUGINTYPES)
+  message(STATUS "当前插件类型:" ${PLUGINTYPE})
+  # 获取当前类别的输出目录
+  set(PLUGINTYPE_OUTPUT_DIR "${OUTPUT_ROOT_DIR}/${PLUGINTYPE}")
+  # 检查json目录是否存在
+  if(NOT EXISTS ${PLUGINTYPE_OUTPUT_DIR}/json)
+    # 创建json目录
+    file(MAKE_DIRECTORY ${PLUGINTYPE_OUTPUT_DIR}/json)
+  endif()
+  # 获取该类别的库列表
+  set(PLUGINS "${PLUGINTYPE}_PLUGINS")
+  foreach(PLUGIN IN LISTS ${PLUGINS})
+    message(STATUS "正在预处理插件:" ${PLUGIN})
+    # 为每个库创建共享库目标
+    add_library(${PLUGIN} SHARED src/plugin/${PLUGIN}.cpp
+                                 headers/plugin/${PLUGINTYPE}.cpp)
+    target_include_directories(${PLUGIN} PUBLIC headers/plugin)
+    target_link_libraries(${PLUGIN} Qt::Core)
+    if("${PLUGINTYPE}" STREQUAL "RenderPlugin")
+      target_link_libraries(${PLUGIN} Qt::Gui Qt::Widgets)
+    endif()
+    # 移除库的前缀,设置后缀
+    set_target_properties(${PLUGIN} PROPERTIES PREFIX "")
+    set_target_properties(${PLUGIN} PROPERTIES SUFFIX ${LIBRARY_SUFFIX})
+    # 设置输出目录为对应类别文件夹
+    set_target_properties(${PLUGIN} PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+                                               ${PLUGINTYPE_OUTPUT_DIR})
+  endforeach()
+endforeach()
+
 # 可执行文件
 add_executable(mmm ${SOURCES})
 
 target_include_directories(mmm PUBLIC ${INCLUDES})
 
 target_link_libraries(mmm Qt::Core Qt::Gui Qt::Widgets)
-
-# 循环为每个插件设置构建规则
-foreach(PLUGIN ${PLUGINS})
-  # 动态创建目标
-  add_library(${PLUGIN} SHARED ${${PLUGIN}_SRC})
-
-  # 配置生成的动态库属性
-  set_target_properties(
-    ${PLUGIN}
-    PROPERTIES OUTPUT_NAME ${PLUGIN} # 动态库的名称（不带后缀）
-               PREFIX "" # 移除默认前缀
-               SUFFIX ${LIBRARY_SUFFIX} # 使用根据操作系统设置的后缀
-               RUNTIME_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIR} # Windows上用于.dll
-               LIBRARY_OUTPUT_DIRECTORY
-               ${PLUGIN_OUTPUT_DIR} # macOS和Linux上用于.dylib或.so
-               ARCHIVE_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIR} # 静态库的输出路径
-  )
-  target_include_directories(${PLUGIN} PUBLIC src/plugin/${${PLUGIN}}
-                                              headers/plugin)
-  target_link_libraries(${PLUGIN} PRIVATE Qt::Core Qt::Gui Qt::Widgets)
-endforeach()

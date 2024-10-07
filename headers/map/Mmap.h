@@ -44,14 +44,14 @@ public:
   // 获取timing时间戳列表
   inline std::vector<int> &timing_timestamps() { return ttimestamplist; }
   // 设置物件,包括添加
-  void putNote(std::shared_ptr<Note> note);
+  void put_note(std::shared_ptr<Note> note);
   // 擦除物件
-  void eraseNote(std::shared_ptr<Note> note);
+  void erase_note(std::shared_ptr<Note> note);
 
   // 插入timing
-  void insertTiming(std::shared_ptr<Timing> timing);
+  void put_timing(std::shared_ptr<Timing> timing);
   // 擦除timing
-  void eraseTiming(std::shared_ptr<Timing> timing);
+  void erase_timing(std::shared_ptr<Timing> timing);
 };
 
 #endif // MMM_MMAP_H

@@ -6,8 +6,11 @@ FileSystemWgt::FileSystemWgt(QWidget *parent) : QWidget(parent) {
   rootLayout->setContentsMargins(0, 0, 0, 0);
   rootLayout->setSpacing(0);
   model = new QFileSystemModel;
-  // 设置根目录为系统根目录
-  model->setRootPath(QDir(QDir::currentPath()).filePath("files"));
+
+  auto projectDir = QDir(QDir::currentPath());
+  projectDir.cdUp();
+  // 设置根目录为构建目录
+  model->setRootPath(projectDir.absolutePath());
 
   treeView = new QTreeView;
   treeView->setModel(model);

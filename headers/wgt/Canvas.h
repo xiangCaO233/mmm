@@ -2,7 +2,7 @@
 #define MMM_CANVAS_H
 
 #include "../map/Mmap.h"
-#include "../plugin/ICanvasRender.h"
+#include "../plugin/RenderPlugin.h"
 #include <QDir>
 #include <QPainter>
 #include <QPluginLoader>
@@ -19,7 +19,7 @@ public:
   Mmap *currentMap;
 
   // 画板插件列表
-  std::vector<ICanvasRender *> plugins;
+  std::vector<RenderPluin *> plugins;
 
   // 插件信息列表
   std::vector<std::unordered_map<std::string, std::string>> pluginInfos;

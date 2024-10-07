@@ -11,7 +11,7 @@ Mmap::Mmap() {}
 
 Mmap::~Mmap() {}
 
-void Mmap::putNote(shared_ptr<Note> note) {
+void Mmap::put_note(shared_ptr<Note> note) {
   int ntime = note->time();
   auto it = nmap.find(ntime);
   if (it != nmap.end()) {
@@ -27,8 +27,8 @@ void Mmap::putNote(shared_ptr<Note> note) {
   }
 }
 
-void Mmap::eraseNote(shared_ptr<Note> note) {}
+void Mmap::erase_note(shared_ptr<Note> note) {}
 
-void Mmap::insertTiming(shared_ptr<Timing> timing) {}
+void Mmap::put_timing(shared_ptr<Timing> timing) {}
 
-void Mmap::eraseTiming(shared_ptr<Timing> timing) {}
+void Mmap::erase_timing(shared_ptr<Timing> timing) {}

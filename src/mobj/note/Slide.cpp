@@ -19,7 +19,7 @@ Slide::Slide(int timestamp, int orbit, int slidelength)
 
 Slide::~Slide() {
   LOG_INFO(
-      "析构slide:" + std::to_string(_time) + "ms,orbit[" +
+      "析构Slide:" + std::to_string(_time) + "ms,orbit[" +
       std::to_string(_orbit) + "],slidearg[" + std::to_string(_slidelengthv) +
       "],slidedata[" + std::to_string(_slidevector.dx) + "," +
       std::to_string(_slidevector.dy) + "," + std::to_string(_slidevector.rad) +

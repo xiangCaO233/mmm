@@ -1,6 +1,6 @@
 #include "../../headers/wgt/Canvas.h"
 #include "../../headers/log/Logger.h"
-#include "plugin/ICanvasRender.h"
+#include "plugin/RenderPlugin.h"
 #include <QJsonDocument>
 #include <string>
 #include <unordered_map>
@@ -9,6 +9,7 @@ Canvas::Canvas(Mmap *map) : currentMap(map) {
   // 加载插件
   QDir pluginsDir = QDir::current();
   pluginsDir.cd("plugin");
+  pluginsDir.cd("RenderPlugin");
   LOG_INFO("当前插件目录:" + pluginsDir.path().toStdString());
   // 在 pluginsDir 中查找并加载插件
   foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
@@ -19,7 +20,7 @@ Canvas::Canvas(Mmap *map) : currentMap(map) {
     if (plugin) {
       // 插件加载成功
       LOG_SUCCESS("插件[" + fileName.toStdString() + "]加载成功");
-      ICanvasRender *renderPlugin = qobject_cast<ICanvasRender *>(plugin);
+      RenderPluin *renderPlugin = qobject_cast<RenderPluin *>(plugin);
       if (renderPlugin) {
         // 将插件添加到列表中
         plugins.push_back(renderPlugin);

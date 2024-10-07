@@ -18,17 +18,26 @@ int main(int argc, char *argv[]) {
   w->show();
 
   auto map = Mmap();
-  map.putNote(std::make_shared<Note>(100, 2));
-  map.putNote(std::make_shared<Hold>(50, 2, 1200));
-  map.putNote(std::make_shared<Slide>(100, 0, 1));
+  map.put_note(std::make_shared<Note>(100, 2));
+  map.put_note(std::make_shared<Hold>(50, 2, 1200));
+  map.put_note(std::make_shared<Slide>(100, 0, 1));
 
   auto mix1 = std::make_shared<MixNote>(50, 3);
 
   auto hold11 = std::make_shared<Hold>(50, 3, 2000);
   auto slide12 = std::make_shared<Slide>(2050, 3, -1);
-  mix1->putnote(hold11);
-  mix1->putnote(slide12);
-  map.putNote(mix1);
+
+  auto slidet = std::make_shared<Slide>(2050, 1, 1);
+  auto holdt = std::make_shared<Hold>(3000, 3, 200);
+
+  mix1->put_note(hold11);
+  mix1->put_note(slide12);
+  mix1->put_note(slidet);
+  mix1->put_note(holdt);
+  mix1->put_note(map.note_map()[100][0]);
+  mix1->put_note(mix1);
+
+  map.put_note(mix1);
 
   w->test_map(&map);
 
