@@ -1,5 +1,6 @@
 #include "../../headers/wgt/MainWidget.h"
 #include "../../headers/log/Logger.h"
+#include <QPluginLoader>
 
 MainWidget::MainWidget() : QWidget(nullptr) { initializeComponents(); }
 

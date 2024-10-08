@@ -2,6 +2,7 @@
 #define MMM_WORKSPACE_H
 
 #include "../map/Mmap.h"
+#include "plugin/MetaPlugin.h"
 #include <QLayout>
 #include <QTabWidget>
 #include <QWidget>
@@ -14,6 +15,10 @@ class WorkSpace : public QWidget {
   QTabWidget *tabWgt;
   // 图列表
   std::vector<Mmap *> mapList;
+  // meta插件列表
+  std::vector<MetaPlugin *> plugins;
+  // meta插件信息列表
+  std::vector<std::unordered_map<std::string, std::string>> metaPluginInfos;
 
 public:
   WorkSpace(QWidget *parent);

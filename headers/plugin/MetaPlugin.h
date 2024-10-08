@@ -1,18 +1,25 @@
 #ifndef MMM_METAPLUGIN_H
 #define MMM_METAPLUGIN_H
 
+#include "../map/Mmap.h"
 #include "../map/meta/BaseMeta.h"
 #include <QObject>
 #include <QtPlugin>
+#include <memory>
 #include <string>
+#include <vector>
 
 class MetaPlugin : public QObject {
   Q_OBJECT
 public:
   MetaPlugin(){};
   virtual ~MetaPlugin() = default;
-  virtual BaseMeta *createMeta() = 0;
-
+  // 创建元数据
+  virtual std::shared_ptr<BaseMeta> generate(std::shared_ptr<BaseMeta> source,
+                                             Mmap &map) = 0;
+  // 获得插件的键列表
+  virtual std::vector<std::string> keys() = 0;
+  // 获取元数据对应文件类型
   virtual std::string file_type() = 0;
 };
 
