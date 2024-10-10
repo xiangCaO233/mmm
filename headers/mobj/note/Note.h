@@ -10,10 +10,12 @@ protected:
   bool _orbited;
   // 轨道位置
   int _orbit;
+  // 大小
+  double _size;
 
 public:
   // 无轨构造
-  Note(int timestamp, double rPosition);
+  Note(int timestamp, double rPosition, double size);
   // 有轨构造
   Note(int timestamp, int orbit);
   virtual ~Note();

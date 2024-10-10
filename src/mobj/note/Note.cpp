@@ -3,8 +3,9 @@
 #include "mobj/MapObject.h"
 #include <string>
 
-Note::Note(int timestamp, double rPosition)
-    : MapObject(timestamp, rPosition), _orbit(-1), _orbited(false) {}
+Note::Note(int timestamp, double rPosition, double size)
+    : MapObject(timestamp, rPosition), _size(size), _orbit(-1),
+      _orbited(false) {}
 
 Note::Note(int timestamp, int orbit)
     : MapObject(timestamp, -1), _orbit(orbit), _orbited(true) {}

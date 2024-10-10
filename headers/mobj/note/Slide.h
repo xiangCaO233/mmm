@@ -21,9 +21,10 @@ class Slide : public Note {
 
 public:
   // 无轨使用方向+距离构造
-  Slide(int timestamp, double rPosition, double direction, double distance);
+  Slide(int timestamp, double rPosition, double size, double direction,
+        double distance);
   // 无轨使用相对位置构造
-  Slide(int timestamp, double rPosition, int dx, int dy);
+  Slide(int timestamp, double rPosition, double size, int dx, int dy);
   // 有轨构造
   Slide(int timestamp, int orbit, int slidelength);
   ~Slide();

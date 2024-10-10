@@ -2,6 +2,7 @@
 #include "../../headers/log/Logger.h"
 #include "plugin/RenderPlugin.h"
 #include <QJsonDocument>
+#include <QWheelEvent>
 #include <string>
 #include <unordered_map>
 
@@ -63,7 +64,20 @@ void Canvas::paintEvent(QPaintEvent *event) {
   // LOG_INFO("插件列表长度:" + to_string((int)plugins.size()));
   for (auto plugin : plugins) {
     // 遍历插件进行渲染
-    // LOG_INFO("调用插件:" + plugin->name());
     plugin->render(p);
   }
 }
+
+void Canvas::wheelEvent(QWheelEvent *event) {
+  // 查找最近的timing
+  start_time += event->pixelDelta().ry();
+  if (start_time <= 0)
+    start_time = 0;
+  if (start_time >= currentMap->length() + 1000)
+    start_time = currentMap->length() + 1000;
+  repaint();
+}
+
+void Canvas::mousePressEvent(QMouseEvent *event) {}
+
+void Canvas::mouseMoveEvent(QMouseEvent *event) {}

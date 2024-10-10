@@ -2,14 +2,15 @@
 #include "../../../headers/log/Logger.h"
 #include <cmath>
 
-Slide::Slide(int timestamp, double rPosition, double direction, double distance)
-    : Note(timestamp, rPosition), _slidelengthv(-1),
+Slide::Slide(int timestamp, double rPosition, double size, double direction,
+             double distance)
+    : Note(timestamp, rPosition, size), _slidelengthv(-1),
       _slidevector({(int)std::floor(std::cos(direction) * distance + 1e-9),
                     (int)std::floor(std::sin(direction) * distance + 1e-9),
                     direction, distance}) {}
 
-Slide::Slide(int timestamp, double rPosition, int dx, int dy)
-    : Note(timestamp, rPosition), _slidelengthv(-1),
+Slide::Slide(int timestamp, double rPosition, double size, int dx, int dy)
+    : Note(timestamp, rPosition, size), _slidelengthv(-1),
       _slidevector({dx, dy, std::atan((double)dy / (double)dx),
                     std::sqrt(dx * dx + dy * dy)}) {}
 

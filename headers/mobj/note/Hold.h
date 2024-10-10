@@ -8,7 +8,7 @@ class Hold : public Note {
 
 public:
   // 无轨构造
-  Hold(int timestamp, double rPosition, int sustaintimev);
+  Hold(int timestamp, double rPosition, double size, int sustaintimev);
   // 有轨构造
   Hold(int timestamp, int orbit, int sustaintime);
   ~Hold();

@@ -27,6 +27,7 @@ set(SOURCES
     src/mobj/note/Hold.cpp
     src/mobj/note/Slide.cpp
     src/mobj/note/MixNote.cpp
+    src/mobj/timing/Timing.cpp
     headers/plugin/RenderPlugin.cpp
     headers/plugin/MetaPlugin.cpp
     src/wgt/Canvas.cpp)

@@ -13,7 +13,7 @@ WorkSpace::WorkSpace(QWidget *parent) : QWidget(parent) {
   tabWgt = new QTabWidget;
   rootLayout->addWidget(tabWgt);
   setLayout(rootLayout);
-  setMinimumSize(600, 450);
+  setMinimumSize(450, 600);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   LOG_INFO("加载元数据插件中");

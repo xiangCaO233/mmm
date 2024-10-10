@@ -6,6 +6,9 @@
 
 class MapObject {
 public:
+  // 物件构造
+  MapObject(int _timev, double _posv);
+  virtual ~MapObject();
   // 物件时间戳
   inline int time() { return _time; };
 
@@ -18,10 +21,6 @@ protected:
   int _time;
   // 物件相对位置
   double _pos;
-
-  // 物件构造
-  MapObject(int _timev, double _posv);
-  virtual ~MapObject();
 };
 
 #endif // MMM_MAPOBJECT_H

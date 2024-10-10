@@ -2,8 +2,8 @@
 #include "../../../headers/log/Logger.h"
 #include <string>
 
-Hold::Hold(int timestamp, double rPosition, int sustaintimev)
-    : Note(timestamp, rPosition), _sustaintime(sustaintimev) {}
+Hold::Hold(int timestamp, double rPosition, double size, int sustaintimev)
+    : Note(timestamp, rPosition, size), _sustaintime(sustaintimev) {}
 
 Hold::Hold(int timestamp, int orbit, int sustaintimev)
     : Note(timestamp, orbit), _sustaintime(sustaintimev) {}
