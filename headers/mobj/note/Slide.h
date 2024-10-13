@@ -34,6 +34,7 @@ public:
   inline int slidelength() const { return _slidelengthv; };
   // 无轨滑动(数组长度为1,值分别为[1]:滑动弧度(角度,单位rad),[2]:滑动距离)
   inline slidevector slidedata() const { return _slidevector; };
+  virtual std::string type_name() const override;
   virtual std::string toString() const override;
 };
 

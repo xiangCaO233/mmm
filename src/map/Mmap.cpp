@@ -63,7 +63,7 @@ void Mmap::put_timing(shared_ptr<Timing> timing) {
         ttime);
   }
   if (timing->is_base()) {
-    abs_timings.insert({timing->time(), timing});
+    abs_timings_.insert({timing->time(), timing});
     LOG_SUCCESS("已添加基准timing:" + timing->toString());
   } else {
     LOG_SUCCESS("已添加timing:" + timing->toString());

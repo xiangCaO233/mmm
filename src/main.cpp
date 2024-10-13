@@ -21,24 +21,24 @@ int main(int argc, char *argv[]) {
   auto map = Mmap();
   map.set_length(120000);
   map.put_timing(std::make_shared<Timing>(46, 100, true));
-  map.put_note(std::make_shared<Note>(100, 2));
-  map.put_note(std::make_shared<Note>(1200, 1));
-  map.put_note(std::make_shared<Note>(1500, 3));
-  map.put_note(std::make_shared<Note>(1800, 1));
-  map.put_note(std::make_shared<Note>(1500, 1));
-  map.put_note(std::make_shared<Note>(1800, 0));
-  map.put_note(std::make_shared<Note>(2100, 2));
-  map.put_note(std::make_shared<Hold>(50, 2, 1200));
+  map.put_note(std::make_shared<Note>(146, 3));
+  map.put_note(std::make_shared<Note>(1246, 2));
+  map.put_note(std::make_shared<Note>(1546, 4));
+  map.put_note(std::make_shared<Note>(1846, 2));
+  map.put_note(std::make_shared<Note>(1546, 2));
+  map.put_note(std::make_shared<Note>(1846, 1));
+  map.put_note(std::make_shared<Note>(2146, 3));
+  map.put_note(std::make_shared<Hold>(50, 3, 1200));
   map.put_timing(std::make_shared<Timing>(100, 100, false));
-  map.put_note(std::make_shared<Slide>(100, 0, 1));
+  map.put_note(std::make_shared<Slide>(100, 1, 2));
 
-  auto mix1 = std::make_shared<MixNote>(50, 3);
+  auto mix1 = std::make_shared<MixNote>(50, 4);
 
-  auto hold11 = std::make_shared<Hold>(50, 3, 2000);
-  auto slide12 = std::make_shared<Slide>(2050, 3, -1);
+  auto hold11 = std::make_shared<Hold>(50, 4, 500);
+  auto slide12 = std::make_shared<Slide>(550, 4, -2);
 
-  auto slidet = std::make_shared<Slide>(2050, 1, 1);
-  auto holdt = std::make_shared<Hold>(3000, 3, 200);
+  auto slidet = std::make_shared<Slide>(2050, 2, 1);
+  auto holdt = std::make_shared<Hold>(3000, 4, 200);
 
   mix1->put_note(hold11);
   mix1->put_note(slide12);

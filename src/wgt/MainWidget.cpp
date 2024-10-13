@@ -22,7 +22,7 @@ void MainWidget::initializeComponents() {
   rootVboxLayout->addWidget(contents);
   // 应用布局
   setLayout(rootVboxLayout);
-  resize(800, 600);
+  resize(500, 700);
 
   LOG_INFO("初始化组件完成");
 }

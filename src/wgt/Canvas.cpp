@@ -27,6 +27,11 @@ Canvas::Canvas(Mmap *map) : currentMap(map) {
         plugins.push_back(renderPlugin);
         // 传递指针
         renderPlugin->sendCanvas(this);
+        renderPlugin->update_mapdata(
+            currentMap->meta(), currentMap->note_map(),
+            currentMap->note_timestamps(), currentMap->timing_map(),
+            currentMap->timing_timestamps(), currentMap->abs_timings(),
+            currentMap->maxOrbit(), currentMap->length());
         // 读取插件信息
         QString jsonFilePath = pluginsDir.absoluteFilePath(
             "json/" + fileInfo.baseName() + ".json");
@@ -61,6 +66,9 @@ Canvas::~Canvas() {}
 
 void Canvas::paintEvent(QPaintEvent *event) {
   auto p = new QPainter(this);
+  // 清除为透明背景
+  p->setCompositionMode(QPainter::CompositionMode_Source);
+  p->fillRect(rect(), Qt::transparent);
   // LOG_INFO("插件列表长度:" + to_string((int)plugins.size()));
   for (auto plugin : plugins) {
     // 遍历插件进行渲染
@@ -81,3 +89,8 @@ void Canvas::wheelEvent(QWheelEvent *event) {
 void Canvas::mousePressEvent(QMouseEvent *event) {}
 
 void Canvas::mouseMoveEvent(QMouseEvent *event) {}
+
+void Canvas::resizeEvent(QResizeEvent *event) {
+  for (auto p : plugins)
+    p->update_size(width(), height());
+}

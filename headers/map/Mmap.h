@@ -24,7 +24,7 @@ class Mmap {
   // timing时间戳列表
   std::vector<int> ttimestamplist;
   // 绝对bpm区间头:bpm
-  std::map<int, std::shared_ptr<Timing>> abs_timings;
+  std::map<int, std::shared_ptr<Timing>> abs_timings_;
   // 轨道数
   int max_orbit{0};
   // 歌曲长度
@@ -34,6 +34,8 @@ public:
   Mmap();
   Mmap(std::string &&file);
   ~Mmap();
+
+  inline BaseMeta &meta() { return mapMetaData; }
 
   // 获取物件映射
   inline std::unordered_map<int, std::vector<std::shared_ptr<Note>>> &
@@ -50,6 +52,10 @@ public:
     return tmap;
   }
 
+  inline std::map<int, std::shared_ptr<Timing>> &abs_timings() {
+    return abs_timings_;
+  }
+
   // 获取timing时间戳列表
   inline std::vector<int> &timing_timestamps() { return ttimestamplist; }
   inline std::shared_ptr<Timing> base_timing(int time) {
@@ -58,8 +64,8 @@ public:
       return nullptr;
     }
     // 查找小于等于time的key所处迭代器
-    auto it = abs_timings.upper_bound(time);
-    if (it != abs_timings.begin())
+    auto it = abs_timings_.upper_bound(time);
+    if (it != abs_timings_.begin())
       --it;
     return it->second;
   }

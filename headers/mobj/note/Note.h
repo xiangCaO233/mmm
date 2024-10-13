@@ -25,6 +25,7 @@ public:
   inline bool orbited() const { return _orbited; };
   // 轨道位置
   inline int orbit() const { return _orbit; };
+  virtual std::string type_name() const { return "单键"; };
   virtual std::string toString() const override;
 };
 

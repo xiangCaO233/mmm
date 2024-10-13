@@ -52,6 +52,8 @@ protected:
   void mousePressEvent(QMouseEvent *event) override;
   // 鼠标移动事件
   void mouseMoveEvent(QMouseEvent *event) override;
+  // 大小改变事件
+  void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // MMM_CANVAS_H

@@ -18,6 +18,7 @@ Note::~Note() {
 std::string Note::toString() const {
   std::ostringstream oss;
   oss << "\nNote {\n"
+      << "\ttype: note\n"
       << "\ttime: " << _time << ",\n"
       << "\tpos: " << _pos << ",\n"
       << "\torbited: " << (_orbited ? "true" : "false") << ",\n"

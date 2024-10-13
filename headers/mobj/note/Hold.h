@@ -17,6 +17,7 @@ public:
   inline NoteType type() const override { return NoteType::HOLD; };
   // 持续时间
   inline int sustaintime() const { return _sustaintime; };
+  virtual std::string type_name() const override;
   virtual std::string toString() const override;
 };
 #endif // MMM_HOLD_H

@@ -22,6 +22,7 @@ public:
   void put_note(std::shared_ptr<Note> child);
   // 移除物件
   void erase_note(std::shared_ptr<Note> note);
+  virtual std::string type_name() const override;
   virtual std::string toString() const override;
 };
 

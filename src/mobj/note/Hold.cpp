@@ -14,9 +14,12 @@ Hold::~Hold() {
            "ms]");
 };
 
+std::string Hold::type_name() const { return "长键"; }
+
 std::string Hold::toString() const {
   std::ostringstream oss;
   oss << "\nHold {\n"
+      << "\ttype: hold\n"
       << "\ttime: " << _time << ",\n"
       << "\tpos: " << _pos << ",\n"
       << "\torbited: " << (_orbited ? "true" : "false") << ",\n"

@@ -19,9 +19,9 @@ FileSystemWgt::FileSystemWgt(QWidget *parent) : QWidget(parent) {
 
   // 在 treeView 中选择文件夹时，listView 显示该文件夹的内容
   connect(treeView, &QTreeView::clicked, [this](const QModelIndex &index) {
-    LOG_DEBUG("当前目录:" + model->filePath(index).toStdString());
+    //   LOG_DEBUG("当前目录:" + model->filePath(index).toStdString());
   });
-  rootLayout->addWidget(treeView);
+  // rootLayout->addWidget(treeView);
   setLayout(rootLayout);
 }
 

@@ -27,10 +27,13 @@ Slide::~Slide() {
       "," + std::to_string(_slidevector.distance) + "]");
 }
 
+std::string Slide::type_name() const { return "滑键"; }
+
 std::string Slide::toString() const {
   std::ostringstream oss;
   oss << "\nSlide {\n"
       << "\ttime: " << _time << ",\n"
+      << "\ttype: slide\n"
       << "\tpos: " << _pos << ",\n"
       << "\torbited: " << (_orbited ? "true" : "false") << ",\n"
       << "\torbit: " << _orbit << ",\n"
