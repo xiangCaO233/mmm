@@ -1,8 +1,7 @@
 #include "../../../headers/mobj/note/MixNote.h"
 #include "../../../headers/log/Logger.h"
-#include "mobj/note/Hold.h"
-#include "mobj/note/Note.h"
-#include "mobj/note/Slide.h"
+#include "../../../headers/mobj/note/Hold.h"
+#include "../../../headers/mobj/note/Slide.h"
 #include <algorithm>
 #include <memory>
 #include <string>

@@ -1,6 +1,5 @@
 #include "../../../headers/mobj/note/Note.h"
 #include "../../../headers/log/Logger.h"
-#include "mobj/MapObject.h"
 #include <string>
 
 Note::Note(int timestamp, double rPosition, double size)

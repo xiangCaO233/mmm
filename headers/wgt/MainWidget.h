@@ -5,6 +5,7 @@
 #include "TopFuncsWgt.h"
 #include <QLayout>
 #include <QWidget>
+#include <string>
 
 class MainWidget : public QWidget {
   // 根布局-vbox
@@ -21,6 +22,7 @@ public:
   ~MainWidget();
 
   void test_map(Mmap *map);
+  void test_map(std::string file);
 };
 
 #endif // MMM_MAINWIDGET_H

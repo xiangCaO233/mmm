@@ -30,6 +30,7 @@ set(SOURCES
     src/mobj/timing/Timing.cpp
     headers/plugin/RenderPlugin.cpp
     headers/plugin/MetaPlugin.cpp
+    headers/plugin/MapReaderPlugin.cpp
     src/wgt/Canvas.cpp)
 
 find_package(
@@ -37,10 +38,11 @@ find_package(
   COMPONENTS Core Gui Widgets
   REQUIRED)
 # 插件类型
-set(PLUGINTYPES RenderPlugin MetaPlugin)
+set(PLUGINTYPES RenderPlugin MetaPlugin MapReaderPlugin)
 # 插件定义
 set(RenderPlugin_PLUGINS CanvasPrimaryRender)
 set(MetaPlugin_PLUGINS ImdMetaData)
+set(MapReaderPlugin_PLUGINS ImdMapReader)
 # 设置输出目录的根路径
 set(OUTPUT_ROOT_DIR "${CMAKE_BINARY_DIR}/plugin")
 
@@ -67,10 +69,34 @@ foreach(PLUGINTYPE IN LISTS PLUGINTYPES)
   set(PLUGINS "${PLUGINTYPE}_PLUGINS")
   foreach(PLUGIN IN LISTS ${PLUGINS})
     message(STATUS "正在预处理插件:" ${PLUGIN})
+    # 为每个库创建共享库目标 定义源文件列表
+    set(PLUGIN_SOURCES src/plugin/${PLUGIN}.cpp
+                       headers/plugin/${PLUGINTYPE}.cpp)
+
+    # 判断插件类型，如果是 MapReaderPlugin，添加谱面相关源文件
+    if("${PLUGINTYPE}" STREQUAL "MapReaderPlugin")
+      list(
+        APPEND
+        PLUGIN_SOURCES
+        src/map/Mmap.cpp
+        src/mobj/timing/Timing.cpp
+        src/mobj/MapObject.cpp
+        src/mobj/note/Note.cpp
+        src/mobj/note/Hold.cpp
+        src/mobj/note/Slide.cpp
+        src/mobj/note/MixNote.cpp
+        src/mobj/MapObject.cpp)
+    endif()
+
     # 为每个库创建共享库目标
-    add_library(${PLUGIN} SHARED src/plugin/${PLUGIN}.cpp
-                                 headers/plugin/${PLUGINTYPE}.cpp)
+    add_library(${PLUGIN} SHARED ${PLUGIN_SOURCES})
     target_include_directories(${PLUGIN} PUBLIC headers/plugin)
+
+    # 判断插件类型，如果是 MapReaderPlugin，添加包含MapObject
+    if("${PLUGINTYPE}" STREQUAL "MapReaderPlugin")
+      target_include_directories(${PLUGIN} PUBLIC headers/mobj)
+    endif()
+
     target_link_libraries(${PLUGIN} Qt::Core)
     if("${PLUGINTYPE}" STREQUAL "RenderPlugin")
       target_link_libraries(${PLUGIN} Qt::Gui Qt::Widgets)

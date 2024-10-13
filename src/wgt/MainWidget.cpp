@@ -1,6 +1,7 @@
 #include "../../headers/wgt/MainWidget.h"
 #include "../../headers/log/Logger.h"
 #include <QPluginLoader>
+#include <string>
 
 MainWidget::MainWidget() : QWidget(nullptr) { initializeComponents(); }
 
@@ -28,3 +29,7 @@ void MainWidget::initializeComponents() {
 }
 
 void MainWidget::test_map(Mmap *map) { contents->workSpace->put_map(map); }
+
+void MainWidget::test_map(std::string file) {
+  contents->workSpace->read_file(file);
+}

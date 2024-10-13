@@ -1,6 +1,5 @@
 #include "../../../headers/mobj/timing/Timing.h"
 #include "../../../headers/log/Logger.h"
-#include "mobj/MapObject.h"
 
 Timing::Timing(int timestampv, double bpm, bool base)
     : MapObject(timestampv, -1), _bpm(bpm), _is_base(base) {

@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 
   auto w = new MainWidget;
   w->show();
-
+#if 0
   auto map = Mmap();
   map.set_length(120000);
   map.put_timing(std::make_shared<Timing>(46, 100, true));
@@ -50,6 +50,14 @@ int main(int argc, char *argv[]) {
   map.put_note(mix1);
 
   w->test_map(&map);
+#endif
+  QDir current = QDir::current();
+  current.cd("../");
+  current.cd("resources/");
+  current.cd("testmap/");
+  w->test_map((current.absolutePath() + "/Contrapasso -paradiso-/t+pazolite - "
+                                        "Contrapasso -paradiso-_4k_hd.imd")
+                  .toStdString());
 
   return app.exec();
 }

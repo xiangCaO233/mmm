@@ -196,7 +196,8 @@ public:
         QPen pen(Qt::white, 6);
         p->setPen(pen);
         // 绘制拍线
-        p->drawLine(0, ly, w, ly);
+        if (ly <= h && ly >= 0)
+          p->drawLine(0, ly, w, ly);
         // p->drawText(0, ly - 4,
         //             QString::number(beat_line_time) + "::pix[" +
         //                 QString::number(ly) + "]");
@@ -229,8 +230,9 @@ public:
           }
           case NoteType::SLIDE: {
             bool a;
+            QRectF b;
             draw_slide_note(p, std::static_pointer_cast<Slide>(note), true,
-                            true, a);
+                            true, a, b);
             break;
           }
           case NoteType::MIX:
@@ -254,14 +256,15 @@ public:
                               : w * n->pos());
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
-    int rny = ny - nh / 2.0;
-    int rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+    double rny = ny - nh / 2.0;
+    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
     QRectF nrec = QRectF(rnx, rny, nw, nh);
     // p->drawRect(nrec);
-    p->drawImage(nrec.x(), nrec.y(),
-                 note_image.scaled(nrec.width(), nrec.height(),
-                                   Qt::IgnoreAspectRatio,
-                                   Qt::SmoothTransformation));
+    if (rny >= 0 && rny < h)
+      p->drawImage(nrec.x(), nrec.y(),
+                   note_image.scaled(nrec.width(), nrec.height(),
+                                     Qt::IgnoreAspectRatio,
+                                     Qt::SmoothTransformation));
   }
   QRectF draw_hold_note(QPainter *p, std::shared_ptr<Hold> hold, bool drawnote,
                         bool drawnode) {
@@ -272,6 +275,10 @@ public:
                          : w * hold->pos());
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
+
+    double rny = ny - nh / 2.0;
+    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+
     double hold_time = hold->sustaintime();
     double ey = (draw_end - hold->time() - hold_time) * pixel_per_ms -
                 judge_line_offset * h;
@@ -280,22 +287,26 @@ public:
     double hx = nx - hw / 2 + w / max_orbit / 2.0;
     QRectF lrec = QRectF(hx, ey, hw, hh);
     // p->drawRect(lrec);
-    p->drawImage(lrec.x(), lrec.y(), fit_long_body_size(long_body_image, lrec));
+
     QRectF noderect((hx - hw / 2), (ey - hw), hw * 2, hw * 2);
+    if (rny < 0 || rny > h)
+      return noderect;
+    p->drawImage(lrec.x(), lrec.y(), fit_long_body_size(long_body_image, lrec));
     if (drawnode) {
       p->drawImage(noderect.x(), noderect.y(),
                    node_image.scaled(noderect.width(), noderect.height(),
                                      Qt::IgnoreAspectRatio,
                                      Qt::SmoothTransformation));
+      if (drawnote)
+        draw_note(p, hold);
     }
     // p->drawRect(noderect);
 
-    if (drawnote)
-      draw_note(p, hold);
     return noderect;
   }
   QRectF draw_slide_note(QPainter *p, std::shared_ptr<Slide> slide,
-                         bool drawnote, bool drawarrow, bool &dir) {
+                         bool drawnote, bool drawarrow, bool &dir,
+                         QRectF &noderect) {
     double ny =
         (draw_end - slide->time()) * pixel_per_ms - judge_line_offset * h;
     double nx =
@@ -303,6 +314,10 @@ public:
                           : w * slide->pos());
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
+
+    double rny = ny - nh / 2.0;
+    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+
     double slidelength = slide->slidelength();
     if (slidelength != 0) {
       double sw = slidelength * w / max_orbit;
@@ -316,21 +331,32 @@ public:
       QRectF srec = QRectF(sx, sy, std::abs(sw), sh);
       // p->drawRect(srec);
 
+      QRectF arrowrect;
+      if (slidelength > 0) {
+
+        arrowrect = QRectF(sx - 2 * sh + sw, sy - 3 * sh / 2, sh * 4, sh * 4);
+        noderect = QRectF(sx - sh + sw, sy - sh / 2, sh * 2, sh * 2);
+      } else {
+
+        arrowrect = QRectF(sx - 2 * sh, sy - 3 * sh / 2, sh * 4, sh * 4);
+        noderect = QRectF(sx - sh, sy - sh / 2, sh * 2, sh * 2);
+      }
+
+      dir = (slidelength > 0);
+      if (rny < 0 || rny > h)
+        return arrowrect;
+      // p->drawRect(arrowrect);
       p->drawImage(srec.x(), srec.y(),
                    fit_rotated_body_size(long_body_rotated_image, srec));
+      // 是否绘制箭头
+      if (drawarrow)
+        p->drawImage(arrowrect.x(), arrowrect.y(),
+                     (slidelength > 0 ? right_arrow_image : left_arrow_image)
+                         .scaled(arrowrect.width(), arrowrect.height(),
+                                 Qt::KeepAspectRatio,
+                                 Qt::SmoothTransformation));
 
-      QRectF arrowrect;
-      if (slidelength > 0)
-        arrowrect = QRectF(sx - 2 * sh + sw, sy - 3 * sh / 2, sh * 4, sh * 4);
-      else
-        arrowrect = QRectF(sx - 2 * sh, sy - 3 * sh / 2, sh * 4, sh * 4);
-      dir = (slidelength > 0);
-      // p->drawRect(arrowrect);
-      p->drawImage(arrowrect.x(), arrowrect.y(),
-                   (slidelength > 0 ? right_arrow_image : left_arrow_image)
-                       .scaled(arrowrect.width(), arrowrect.height(),
-                               Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
+      // 是否绘制头
       if (drawnote)
         draw_note(p, slide);
       return arrowrect;
@@ -338,6 +364,18 @@ public:
     return {};
   }
   void draw_mix_note(QPainter *p, std::shared_ptr<MixNote> mixnote) {
+    double ny =
+        (draw_end - mixnote->time()) * pixel_per_ms - judge_line_offset * h;
+    double nx = (mixnote->orbited()
+                     ? w * ((double)mixnote->orbit() - 1) / (double)max_orbit
+                     : w * mixnote->pos());
+    double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
+    double nw = 2.5 * nh;
+    double rny = ny - nh / 2.0;
+    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+    if (rny < 0 || rny > h)
+      return;
+
     int index = 0;
     int size = mixnote->childnotes().size();
     auto nodelist = std::vector<QRectF>();
@@ -353,7 +391,10 @@ public:
       };
       case NoteType::SLIDE: {
         auto slide = std::static_pointer_cast<Slide>(childnote);
-        QRectF arrowrect = draw_slide_note(p, slide, false, false, dir);
+        QRectF noderect;
+        QRectF arrowrect =
+            draw_slide_note(p, slide, false, false, dir, noderect);
+        nodelist.push_back(noderect);
         if (index + 1 == size) {
           tailarrow = arrowrect;
         }
