@@ -394,9 +394,11 @@ public:
         QRectF noderect;
         QRectF arrowrect =
             draw_slide_note(p, slide, false, false, dir, noderect);
-        nodelist.push_back(noderect);
         if (index + 1 == size) {
           tailarrow = arrowrect;
+        } else {
+
+          nodelist.push_back(noderect);
         }
         break;
       }

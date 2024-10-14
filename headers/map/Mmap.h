@@ -5,7 +5,7 @@
 #include "../mobj/note/Note.h"
 #include "../mobj/timing/Timing.h"
 #include "meta/BaseMeta.h"
-#include <cstddef>
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>

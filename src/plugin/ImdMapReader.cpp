@@ -189,6 +189,7 @@ public:
       }
     }
 
+    map->set_length(mapLength);
     return map;
   }
   virtual std::string suffix() override { return "imd"; }

@@ -68,8 +68,8 @@ void Canvas::paintEvent(QPaintEvent *event) {
   auto p = new QPainter(this);
   // 清除为透明背景
   p->setCompositionMode(QPainter::CompositionMode_Source);
-  p->fillRect(rect(), Qt::transparent);
-  // LOG_INFO("插件列表长度:" + to_string((int)plugins.size()));
+  // p->fillRect(rect(), Qt::transparent);
+  //  LOG_INFO("插件列表长度:" + to_string((int)plugins.size()));
   for (auto plugin : plugins) {
     // 遍历插件进行渲染
     plugin->render(p);
@@ -77,8 +77,14 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::wheelEvent(QWheelEvent *event) {
+  LOG_DEBUG("滚动事件触发" + std::to_string(event->angleDelta().ry()));
   // 查找最近的timing
-  start_time += event->pixelDelta().ry();
+
+  int dy = event->pixelDelta().rx();
+  if (dy == 0) {
+    dy = event->angleDelta().ry();
+  }
+  start_time += dy;
   if (start_time <= 0)
     start_time = 0;
   if (start_time >= currentMap->length() + 1000)
