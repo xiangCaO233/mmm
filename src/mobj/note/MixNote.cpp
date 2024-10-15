@@ -1,7 +1,4 @@
 #include "../../../headers/mobj/note/MixNote.h"
-#include "../../../headers/log/Logger.h"
-#include "../../../headers/mobj/note/Hold.h"
-#include "../../../headers/mobj/note/Slide.h"
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -80,6 +77,12 @@ void MixNote::put_note(std::shared_ptr<Note> note) {
     }
     if (!check)
       return;
+    else {
+      Note::_info.end_orbit = tailOrbit;
+      Note::_info.end_time = tailNoteTime;
+      LOG_SUCCESS("更新此组合键结尾时间:" + std::to_string(tailNoteTime));
+      LOG_SUCCESS("更新此组合键结尾轨道:" + std::to_string(tailOrbit));
+    }
   }
   child_notes.push_back(note);
 }

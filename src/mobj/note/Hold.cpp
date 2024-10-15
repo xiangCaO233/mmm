@@ -3,10 +3,18 @@
 #include <string>
 
 Hold::Hold(int timestamp, double rPosition, double size, int sustaintimev)
-    : Note(timestamp, rPosition, size), _sustaintime(sustaintimev) {}
+    : Note(timestamp, rPosition, size), _sustaintime(sustaintimev) {
+  Note::_info.end_pos = rPosition;
+  Note::_info.end_orbit = -1;
+  Note::_info.end_time = _time + _sustaintime;
+}
 
 Hold::Hold(int timestamp, int orbit, int sustaintimev)
-    : Note(timestamp, orbit), _sustaintime(sustaintimev) {}
+    : Note(timestamp, orbit), _sustaintime(sustaintimev) {
+  Note::_info.end_pos = -1;
+  Note::_info.end_orbit = _orbit;
+  Note::_info.end_time = _time + _sustaintime;
+}
 
 Hold::~Hold() {
   LOG_INFO("析构Hold:" + std::to_string(_time) + "ms,orbit[" +

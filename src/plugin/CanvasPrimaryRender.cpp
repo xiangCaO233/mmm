@@ -251,13 +251,11 @@ public:
     p->end();
   };
   void draw_note(QPainter *p, std::shared_ptr<Note> n) {
-    double ny = (draw_end - n->time()) * pixel_per_ms - judge_line_offset * h;
-    double nx = (n->orbited() ? w * ((double)n->orbit() - 1) / (double)max_orbit
-                              : w * n->pos());
+    auto c = get_note_center(n);
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
-    double rny = ny - nh / 2.0;
-    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+    double rny = c.y() - nh / 2.0;
+    double rnx = c.x() - nw / 2.0 + w / max_orbit / 2.0;
     QRectF nrec = QRectF(rnx, rny, nw, nh);
     // p->drawRect(nrec);
     if (rny >= 0 && rny < h)
@@ -268,28 +266,23 @@ public:
   }
   QRectF draw_hold_note(QPainter *p, std::shared_ptr<Hold> hold, bool drawnote,
                         bool drawnode) {
-    double ny =
-        (draw_end - hold->time()) * pixel_per_ms - judge_line_offset * h;
-    double nx =
-        (hold->orbited() ? w * ((double)hold->orbit() - 1) / (double)max_orbit
-                         : w * hold->pos());
+    auto c = get_note_center(hold);
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
-
-    double rny = ny - nh / 2.0;
-    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+    double rny = c.y() - nh / 2.0;
+    double rnx = c.x() - nw / 2.0 + w / max_orbit / 2.0;
 
     double hold_time = hold->sustaintime();
     double ey = (draw_end - hold->time() - hold_time) * pixel_per_ms -
                 judge_line_offset * h;
-    double hh = ny - ey;
+    double hh = c.y() - ey;
     double hw = nw / 6.0;
-    double hx = nx - hw / 2 + w / max_orbit / 2.0;
+    double hx = c.x() - hw / 2 + w / max_orbit / 2.0;
     QRectF lrec = QRectF(hx, ey, hw, hh);
     // p->drawRect(lrec);
 
     QRectF noderect((hx - hw / 2), (ey - hw), hw * 2, hw * 2);
-    if (rny < 0 || rny > h)
+    if (c.y() < 0 || get_time_y(hold->info().end_time) > h)
       return noderect;
     p->drawImage(lrec.x(), lrec.y(), fit_long_body_size(long_body_image, lrec));
     if (drawnode) {
@@ -307,26 +300,21 @@ public:
   QRectF draw_slide_note(QPainter *p, std::shared_ptr<Slide> slide,
                          bool drawnote, bool drawarrow, bool &dir,
                          QRectF &noderect) {
-    double ny =
-        (draw_end - slide->time()) * pixel_per_ms - judge_line_offset * h;
-    double nx =
-        (slide->orbited() ? w * ((double)slide->orbit() - 1) / (double)max_orbit
-                          : w * slide->pos());
+    auto c = get_note_center(slide);
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
-
-    double rny = ny - nh / 2.0;
-    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
+    double rny = c.y() - nh / 2.0;
+    double rnx = c.x() - nw / 2.0 + w / max_orbit / 2.0;
 
     double slidelength = slide->slidelength();
     if (slidelength != 0) {
       double sw = slidelength * w / max_orbit;
       double sh = nw / 6.0;
       double sx =
-          nx + sw - w / max_orbit / 2.0 - (slidelength - 1) * w / max_orbit;
+          c.x() + sw - w / max_orbit / 2.0 - (slidelength - 1) * w / max_orbit;
       if (slidelength < 0)
         sx -= std::abs(sw);
-      double sy = ny - sh / 2.0;
+      double sy = c.y() - sh / 2.0;
 
       QRectF srec = QRectF(sx, sy, std::abs(sw), sh);
       // p->drawRect(srec);
@@ -364,18 +352,17 @@ public:
     return {};
   }
   void draw_mix_note(QPainter *p, std::shared_ptr<MixNote> mixnote) {
-    double ny =
-        (draw_end - mixnote->time()) * pixel_per_ms - judge_line_offset * h;
-    double nx = (mixnote->orbited()
-                     ? w * ((double)mixnote->orbit() - 1) / (double)max_orbit
-                     : w * mixnote->pos());
+    auto c = get_note_center(mixnote);
     double nh = 600 / time_line_zoom / 15 * pixel_per_ms;
     double nw = 2.5 * nh;
-    double rny = ny - nh / 2.0;
-    double rnx = nx - nw / 2.0 + w / max_orbit / 2.0;
-    if (rny < 0 || rny > h)
+    double rny = c.y() - nh / 2.0;
+    double rnx = c.x() - nw / 2.0 + w / max_orbit / 2.0;
+
+    if (c.y() < 0 || get_time_y(mixnote->info().end_time) > h)
       return;
 
+    // LOG_DEBUG("当前组合键:" + mixnote->toString());
+    // LOG_DEBUG("当前组合键end:" + std::to_string(mixnote->info().end_time));
     int index = 0;
     int size = mixnote->childnotes().size();
     auto nodelist = std::vector<QRectF>();
@@ -493,6 +480,19 @@ public:
 
     return res;
   }
+
+  QPointF get_note_center(std::shared_ptr<Note> note) {
+    return {(note->orbited()
+                 ? w * ((double)note->orbit() - 1) / (double)max_orbit
+                 : w * note->pos()),
+            get_time_y(note->time())};
+  }
+
+  // 获取y对应像素位置
+  qreal get_time_y(int time) {
+    return (draw_end - time) * pixel_per_ms - judge_line_offset * h;
+  }
+
   void drawSelectObjectsEffect(QPainter *p) {}
   bool double_mod(double a, double b) { return std::fabs(fmod(a, b)) < 1e-6; }
 };

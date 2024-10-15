@@ -7,16 +7,29 @@ Slide::Slide(int timestamp, double rPosition, double size, double direction,
     : Note(timestamp, rPosition, size), _slidelengthv(-1),
       _slidevector({(int)std::floor(std::cos(direction) * distance + 1e-9),
                     (int)std::floor(std::sin(direction) * distance + 1e-9),
-                    direction, distance}) {}
+                    direction, distance}) {
+
+  Note::_info.end_pos = rPosition + _slidevector.dx;
+  Note::_info.end_orbit = -1;
+  Note::_info.end_time = _time;
+}
 
 Slide::Slide(int timestamp, double rPosition, double size, int dx, int dy)
     : Note(timestamp, rPosition, size), _slidelengthv(-1),
       _slidevector({dx, dy, std::atan((double)dy / (double)dx),
-                    std::sqrt(dx * dx + dy * dy)}) {}
+                    std::sqrt(dx * dx + dy * dy)}) {
+  Note::_info.end_pos = rPosition + _slidevector.dx;
+  Note::_info.end_orbit = -1;
+  Note::_info.end_time = _time;
+}
 
 Slide::Slide(int timestamp, int orbit, int slidelength)
     : Note(timestamp, orbit), _slidelengthv(slidelength),
-      _slidevector({-1, -1, slidelength > 0 ? 0 : 2 * M_PI, -1}) {}
+      _slidevector({-1, -1, slidelength > 0 ? 0 : 2 * M_PI, -1}) {
+  Note::_info.end_pos = -1;
+  Note::_info.end_orbit = _orbit + slidelength;
+  Note::_info.end_time = _time;
+}
 
 Slide::~Slide() {
   LOG_INFO(

@@ -4,8 +4,15 @@
 #include "../MapObject.h"
 
 enum class NoteType { NOTE, HOLD, SLIDE, MIX };
+struct NoteInfo {
+  int end_time;
+  int end_orbit;
+  double end_pos;
+};
 class Note : public MapObject {
 protected:
+  // 按键信息
+  NoteInfo _info;
   // 是否有轨
   bool _orbited;
   // 轨道位置
@@ -25,6 +32,8 @@ public:
   inline bool orbited() const { return _orbited; };
   // 轨道位置
   inline int orbit() const { return _orbit; };
+  // 物件更多信息
+  virtual inline NoteInfo info() { return _info; }
   virtual std::string type_name() const { return "单键"; };
   virtual std::string toString() const override;
 };

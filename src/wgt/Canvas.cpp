@@ -77,13 +77,11 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::wheelEvent(QWheelEvent *event) {
-  LOG_DEBUG("滚动事件触发" + std::to_string(event->angleDelta().ry()));
-  // 查找最近的timing
-
-  int dy = event->pixelDelta().rx();
-  if (dy == 0) {
-    dy = event->angleDelta().ry();
-  }
+  // LOG_DEBUG("滚动事件触发" + std::to_string(event->angleDelta().ry()));
+  //  查找最近的timing
+  int dy;
+  dy += event->pixelDelta().rx();
+  dy += event->angleDelta().ry();
   start_time += dy;
   if (start_time <= 0)
     start_time = 0;

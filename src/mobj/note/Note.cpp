@@ -4,10 +4,18 @@
 
 Note::Note(int timestamp, double rPosition, double size)
     : MapObject(timestamp, rPosition), _size(size), _orbit(-1),
-      _orbited(false) {}
+      _orbited(false) {
+  _info.end_pos = -1;
+  _info.end_orbit = _orbit;
+  _info.end_time = _time;
+}
 
 Note::Note(int timestamp, int orbit)
-    : MapObject(timestamp, -1), _orbit(orbit), _orbited(true) {}
+    : MapObject(timestamp, -1), _orbit(orbit), _orbited(true) {
+  _info.end_pos = -1;
+  _info.end_orbit = _orbit;
+  _info.end_time = _time;
+}
 
 Note::~Note() {
   LOG_INFO("析构Note:" + std::to_string(_time) + "ms,orbit[" +

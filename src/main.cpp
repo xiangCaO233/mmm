@@ -1,13 +1,6 @@
 #include "../headers/log/Logger.h"
-#include "../headers/map/Mmap.h"
-#include "../headers/mobj/note/Hold.h"
-#include "../headers/mobj/note/MixNote.h"
 #include "../headers/wgt/MainWidget.h"
-#include "mobj/note/Note.h"
-#include "mobj/note/Slide.h"
-#include "mobj/timing/Timing.h"
 #include <QApplication>
-#include <memory>
 
 using namespace Logger;
 int main(int argc, char *argv[]) {
