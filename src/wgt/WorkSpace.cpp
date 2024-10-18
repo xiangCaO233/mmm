@@ -1,10 +1,12 @@
 #include "../../headers/wgt/WorkSpace.h"
 #include "../../headers/log/Logger.h"
 #include "../../headers/wgt/Canvas.h"
+#include "map/meta/BaseMeta.h"
 #include "plugin/MapReaderPlugin.h"
 #include <QDir>
 #include <QJsonDocument>
 #include <QPluginLoader>
+#include <memory>
 #include <string>
 
 WorkSpace::WorkSpace(QWidget *parent) : QWidget(parent) {
@@ -18,14 +20,23 @@ WorkSpace::WorkSpace(QWidget *parent) : QWidget(parent) {
   setMinimumSize(450, 600);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  LOG_INFO("加载元数据插件中");
-  // 加载meta插件
+  LOG_INFO("加载map相关插件中");
+  // 切换插件目录
   QDir pluginsDir = QDir::current();
   pluginsDir.cd("plugin");
 
   load_plugin(pluginsDir, "MetaPlugin");
   pluginsDir.cd("../");
   load_plugin(pluginsDir, "MapReaderPlugin");
+
+  for (auto meta_plugin : meta_plugins) {
+    for (auto reader_plugin : reader_plugins) {
+      if (reader_plugin->suffix() == meta_plugin->file_type()) {
+        std::shared_ptr<BaseMeta> meta(dynamic_cast<BaseMeta *>(meta_plugin));
+        reader_plugin->place_meta(meta);
+      }
+    }
+  }
 
   LOG_DEBUG("初始化工作区完成");
 }

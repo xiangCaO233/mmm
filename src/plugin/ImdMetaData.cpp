@@ -12,9 +12,9 @@ class ImdMetaData : public MetaPlugin, public BaseMeta {
 public:
   ImdMetaData() : MetaPlugin(), BaseMeta() {
     // 注册imd特有属性
-    registerMetaData("tabrows", MetaType::int_, 0);
+    registerMetaData("Tabrows", MetaType::int_, 0);
     // 注册imd特有属性
-    registerMetaData("maplength", MetaType::int_, 0);
+    registerMetaData("MapLength", MetaType::int_, 0);
   };
 
   // 扩展构造

@@ -7,7 +7,6 @@
 #include <QPainter>
 #include <QPluginLoader>
 #include <QWidget>
-#include <memory>
 #include <vector>
 
 class Canvas : public QWidget {

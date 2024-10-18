@@ -31,7 +31,7 @@ class Mmap {
   int length_{60000};
 
 public:
-  Mmap();
+  Mmap(BaseMeta &meta);
   Mmap(std::string &&file);
   ~Mmap();
 

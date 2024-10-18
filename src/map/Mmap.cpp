@@ -5,7 +5,7 @@
 #include <string>
 using namespace std;
 
-Mmap::Mmap() {}
+Mmap::Mmap(BaseMeta &meta) : mapMetaData(meta) {}
 
 Mmap::~Mmap() {}
 

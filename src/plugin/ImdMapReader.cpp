@@ -1,6 +1,8 @@
 #include "../log/Logger.h"
+#include "../map/meta/BaseMeta.h"
 #include "../mobj/timing/Timing.h"
 #include "MapReaderPlugin.h"
+#include "MetaPlugin.h"
 #include "note/Hold.h"
 #include "note/MixNote.h"
 #include "note/Slide.h"
@@ -20,7 +22,6 @@ public:
     // 可以根据需要实现字节序设置
     this->order = order;
   }
-
   int getInt() {
     int value = *reinterpret_cast<int *>(&data[position]);
     position += sizeof(int);
@@ -75,13 +76,14 @@ class ImdMapReader : public MapReaderPlugin {
   Q_OBJECT
   Q_PLUGIN_METADATA(IID MapReaderPlugin_iid)
   Q_INTERFACES(MapReaderPlugin)
+
 public:
   ImdMapReader() : MapReaderPlugin(){};
   ~ImdMapReader() override = default;
 
   virtual Mmap *read(std::string file) override {
     LOG_INFO("开始读取");
-    Mmap *map = new Mmap();
+    Mmap *map = new Mmap(*_meta);
     // 读取文件
     std::ifstream inputFile(file, std::ios::binary);
     if (!inputFile)
@@ -98,15 +100,18 @@ public:
       LOG_ERROR("imd文件错误");
     }
     // 找到下划线的位置
-    size_t startPos = fileName.find("_") + 1;
-    size_t endPos = fileName.rfind("_");
+    size_t fst_ = fileName.find("_") + 1;
+    size_t scd_ = fileName.rfind("_") + 1;
+    size_t lstdot = fileName.rfind(".");
     // 提取子字符串
-    std::string substring = fileName.substr(startPos, endPos - startPos);
+    std::string keysinfo = fileName.substr(fst_, scd_ - fst_ + 1);
+    std::string audiofile = fileName.substr(0, fst_);
+    std::string version = fileName.substr(scd_, lstdot);
     // 替换 "k" 为 ""
-    substring.erase(std::remove(substring.begin(), substring.end(), 'k'),
-                    substring.end());
+    keysinfo.erase(std::remove(keysinfo.begin(), keysinfo.end(), 'k'),
+                   keysinfo.end());
     // 转换为整数
-    int maxOrbit = std::stoi(substring);
+    int maxOrbit = std::stoi(keysinfo);
     LOG_DEBUG("谱面key数[" + std::to_string(maxOrbit) + "]");
 
     // 读取imd元数据
@@ -118,7 +123,7 @@ public:
     // 读取基准 BPM
     bf.setPosition(12);
     double preferenceBpm = bf.getDouble();
-    LOG_DEBUG("谱面基准bpm:[" + std::to_string(preferenceBpm) + "]");
+    // LOG_DEBUG("谱面基准bpm:[" + std::to_string(preferenceBpm) + "]");
 
     // 读取 timing 信息
     bf.setPosition(8);
@@ -189,7 +194,14 @@ public:
       }
     }
 
+    map->meta().setMetaData("AudioFile", MetaType::string_, audiofile);
+    map->meta().setMetaData("Title", MetaType::string_, audiofile);
+    map->meta().setMetaData("TitleUnicode", MetaType::string_, audiofile);
+    map->meta().setMetaData("Version", MetaType::string_, version);
+    map->meta().setMetaData("Tabrows", MetaType::int_, tabRows);
+    map->meta().setMetaData("MapLength", MetaType::int_, mapLength);
     map->set_length(mapLength);
+
     return map;
   }
   virtual std::string suffix() override { return "imd"; }
