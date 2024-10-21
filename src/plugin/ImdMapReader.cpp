@@ -2,7 +2,6 @@
 #include "../map/meta/BaseMeta.h"
 #include "../mobj/timing/Timing.h"
 #include "MapReaderPlugin.h"
-#include "MetaPlugin.h"
 #include "note/Hold.h"
 #include "note/MixNote.h"
 #include "note/Slide.h"
@@ -102,11 +101,14 @@ public:
     // 找到下划线的位置
     size_t fst_ = fileName.find("_") + 1;
     size_t scd_ = fileName.rfind("_") + 1;
+    // 找到最后一个.的位置
     size_t lstdot = fileName.rfind(".");
     // 提取子字符串
     std::string keysinfo = fileName.substr(fst_, scd_ - fst_ + 1);
-    std::string audiofile = fileName.substr(0, fst_);
-    std::string version = fileName.substr(scd_, lstdot);
+    std::string audiofile = fileName.substr(0, fst_ - 1);
+    std::string audio_file_path =
+        file.substr(0, file.find_last_of("/\\")) + "/" + audiofile + ".mp3";
+    std::string version = fileName.substr(scd_, lstdot - scd_);
     // 替换 "k" 为 ""
     keysinfo.erase(std::remove(keysinfo.begin(), keysinfo.end(), 'k'),
                    keysinfo.end());
@@ -193,6 +195,7 @@ public:
         map->put_note(tempNote);
       }
     }
+    LOG_INFO("Version:" + version);
 
     map->meta().setMetaData("AudioFile", MetaType::string_, audiofile);
     map->meta().setMetaData("Title", MetaType::string_, audiofile);
@@ -200,6 +203,8 @@ public:
     map->meta().setMetaData("Version", MetaType::string_, version);
     map->meta().setMetaData("Tabrows", MetaType::int_, tabRows);
     map->meta().setMetaData("MapLength", MetaType::int_, mapLength);
+    map->meta().setMetaData("AbsoluteAudioPath", MetaType::string_,
+                            audio_file_path);
     map->set_length(mapLength);
 
     return map;

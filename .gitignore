@@ -3,6 +3,7 @@
 /.qt
 /build
 /plugin
+/old
 
 # 忽略文件
 *.DS_Store

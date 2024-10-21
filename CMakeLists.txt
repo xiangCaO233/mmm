@@ -12,7 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 add_definitions(-DPROJECT_DIR=\"${CMAKE_SOURCE_DIR}\")
 
 # 可执行文件头文件目录
-set(INCLUDES headers/)
+set(INCLUDES headers/audio headers)
 # 可执行文件源文件
 set(SOURCES
     src/main.cpp
@@ -31,12 +31,16 @@ set(SOURCES
     headers/plugin/RenderPlugin.cpp
     headers/plugin/MetaPlugin.cpp
     headers/plugin/MapReaderPlugin.cpp
-    src/wgt/Canvas.cpp)
+    src/wgt/Canvas.cpp
+    src/audio/audioplayer.cpp
+    headers/audio/posreceiver.cpp
+    src/opengl/OpenGLCanvas.cpp)
 
 find_package(
   Qt6
-  COMPONENTS Core Gui Widgets
+  COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets
   REQUIRED)
+find_library(LIB_BASS NAMES bass_lib PARTS)
 # 插件类型
 set(PLUGINTYPES RenderPlugin MetaPlugin MapReaderPlugin)
 # 插件定义
@@ -54,6 +58,9 @@ elseif(APPLE)
 else()
   set(LIBRARY_SUFFIX ".so") # Linux or other Unix-like OS
 endif()
+
+set(BASS_LIB_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/bass_lib/libbass${LIBRARY_SUFFIX}")
 
 # 循环遍历每个类别
 foreach(PLUGINTYPE IN LISTS PLUGINTYPES)
@@ -115,4 +122,5 @@ add_executable(mmm ${SOURCES})
 
 target_include_directories(mmm PUBLIC ${INCLUDES})
 
-target_link_libraries(mmm Qt::Core Qt::Gui Qt::Widgets)
+target_link_libraries(mmm PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::OpenGL
+                                 Qt::OpenGLWidgets ${BASS_LIB_PATH})

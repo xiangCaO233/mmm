@@ -1,5 +1,6 @@
 #include "../headers/log/Logger.h"
 #include "../headers/wgt/MainWidget.h"
+#include "audio/audioplayer.h"
 #include <QApplication>
 
 using namespace Logger;
@@ -48,9 +49,10 @@ int main(int argc, char *argv[]) {
   current.cd("../");
   current.cd("resources/");
   current.cd("testmap/");
-  w->test_map((current.absolutePath() + "/Contrapasso -paradiso-/t+pazolite - "
-                                        "Contrapasso -paradiso-_4k_hd.imd")
-                  .toStdString());
+  w->test_map(
+      (current.absolutePath() +
+       "/Contrapasso -paradiso-/t+pazolite - Contrapasso -paradiso-_4k_hd.imd")
+          .toStdString());
 
   return app.exec();
 }

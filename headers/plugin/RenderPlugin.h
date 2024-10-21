@@ -38,14 +38,15 @@ public:
   // 传递canvas
   virtual void sendCanvas(Canvas *canvas) = 0;
   // 绘制接口
-  virtual void render(QPainter *paiter) = 0;
+  virtual void render(QImage *paiter) = 0;
 
-private:
   // 更新数据
-  void update_size(int wv, int hv) {
+  virtual void update_size(int wv, int hv) {
     w = wv;
     h = hv;
   }
+
+private:
   void update_mapdata(
 
       BaseMeta mapMetaDatav,

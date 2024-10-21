@@ -1,6 +1,7 @@
 #include "../../headers/wgt/WorkSpace.h"
 #include "../../headers/log/Logger.h"
 #include "../../headers/wgt/Canvas.h"
+#include "../../headers/wgt/opengl/OpenGLCanvas.h"
 #include "map/meta/BaseMeta.h"
 #include "plugin/MapReaderPlugin.h"
 #include <QDir>
@@ -46,7 +47,16 @@ WorkSpace::~WorkSpace() {}
 void WorkSpace::put_map(Mmap *map) {
   mapList.push_back(map);
 
-  tabWgt->addTab(new Canvas(map), "map1");
+  std::string audio_name =
+      map->meta().getMeta<std::string>("AudioFile", MetaType::string_);
+
+  std::string audio_file =
+      map->meta().getMeta<std::string>("AbsoluteAudioPath", MetaType::string_);
+  tabWgt->addTab(new OpenGLCanvas(this), "opengltest");
+  tabWgt->addTab(new Canvas(map, this), QString::fromStdString(audio_name));
+  song_list.push_back(audio_file);
+  player.put_audio(audio_file.c_str());
+  // player.play_audio(audio_name.c_str(), false);
 }
 void WorkSpace::read_file(std::string file) {
   LOG_INFO("尝试读取:" + file);

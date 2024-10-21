@@ -1,20 +1,23 @@
 #ifndef MMM_CANVAS_H
 #define MMM_CANVAS_H
 
+#include "../audio/posreceiver.h"
 #include "../map/Mmap.h"
 #include "../plugin/RenderPlugin.h"
+#include "WorkSpace.h"
 #include <QDir>
 #include <QPainter>
 #include <QPluginLoader>
+#include <QTimer>
 #include <QWidget>
 #include <vector>
 
 class Canvas : public QWidget {
-
 public:
-  Canvas(Mmap *map);
+  Canvas(Mmap *map, WorkSpace *workSpace);
   ~Canvas();
-
+  // 当前工作区
+  WorkSpace *current_work_space;
   // 当前canvas绑定的map
   Mmap *currentMap;
 
@@ -22,7 +25,7 @@ public:
   double time_line_zoom{0.7};
 
   // 起始绘制时间
-  int start_time{0};
+  double start_time{0.0};
 
   // 基准bpm
   double base_bpm;
@@ -41,6 +44,15 @@ public:
 
   // 插件信息列表
   std::vector<std::unordered_map<std::string, std::string>> pluginInfos;
+
+  QTimer *refresh_timer;
+  QTimer *sync_timer;
+
+  posreceiver *preceiver;
+
+public slots:
+  void update_map();
+  void update_start_time();
 
 protected:
   // 绘制

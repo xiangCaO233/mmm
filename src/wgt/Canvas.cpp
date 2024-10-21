@@ -1,12 +1,16 @@
 #include "../../headers/wgt/Canvas.h"
 #include "../../headers/log/Logger.h"
+#include "map/meta/BaseMeta.h"
 #include "plugin/RenderPlugin.h"
+#include "posreceiver.h"
 #include <QJsonDocument>
+#include <QObject>
 #include <QWheelEvent>
 #include <string>
 #include <unordered_map>
 
-Canvas::Canvas(Mmap *map) : currentMap(map) {
+Canvas::Canvas(Mmap *map, WorkSpace *workSpace)
+    : currentMap(map), current_work_space(workSpace) {
   // 加载插件
   QDir pluginsDir = QDir::current();
   pluginsDir.cd("plugin");
@@ -60,20 +64,45 @@ Canvas::Canvas(Mmap *map) : currentMap(map) {
       LOG_WARNING("插件[" + fileName.toStdString() + "]加载失败");
     }
   }
+  // 初始化刷新线程
+  refresh_timer = new QTimer(this);
+  connect(refresh_timer, &QTimer::timeout, this, &Canvas::update_map);
+  // refresh_timer->start(16);
+  //  初始化同步线程
+  sync_timer = new QTimer(this);
+  connect(sync_timer, &QTimer::timeout, this, &Canvas::update_start_time);
+  sync_timer->start(50);
+  preceiver = new posreceiver();
+  connect(preceiver, &posreceiver::update_pos, &(current_work_space->player),
+          &audioplayer::set_audio_pos);
 }
 
 Canvas::~Canvas() {}
 
+void Canvas::update_map() {
+  start_time += 16;
+  repaint();
+}
+void Canvas::update_start_time() {
+  start_time = current_work_space->player.get_audio_pos(
+      currentMap->meta().getMeta<std::string>("AudioFile", MetaType::string_));
+}
+
 void Canvas::paintEvent(QPaintEvent *event) {
-  auto p = new QPainter(this);
+  QPainter p(this);
   // 清除为透明背景
-  p->setCompositionMode(QPainter::CompositionMode_Source);
-  // p->fillRect(rect(), Qt::transparent);
+  p.setCompositionMode(QPainter::CompositionMode_Source);
+  // p.fillRect(rect(), Qt::transparent);
+  QImage *frame_buffer =
+      new QImage(width(), height(), QImage::Format_A2BGR30_Premultiplied);
+  frame_buffer->fill(QColor::fromRgb(44, 44, 44));
   //  LOG_INFO("插件列表长度:" + to_string((int)plugins.size()));
   for (auto plugin : plugins) {
     // 遍历插件进行渲染
-    plugin->render(p);
+    plugin->render(frame_buffer);
   }
+  p.drawImage(0, 0, *frame_buffer);
+  delete frame_buffer;
 }
 
 void Canvas::wheelEvent(QWheelEvent *event) {
@@ -86,6 +115,9 @@ void Canvas::wheelEvent(QWheelEvent *event) {
   if (start_time >= currentMap->length() + 1000)
     start_time = currentMap->length() + 1000;
   repaint();
+  string name =
+      currentMap->meta().getMeta<std::string>("AudioFile", MetaType::string_);
+  preceiver->receive(name, start_time);
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {}

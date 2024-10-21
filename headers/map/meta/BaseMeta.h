@@ -32,8 +32,9 @@ public:
   };
   // 构造meta--注册通用属性表
   BaseMeta() {
-    universalKeys = {"AudioFile",     "Title",   "TitleUnicode", "Artist",
-                     "ArtistUnicode", "Creator", "Version",      "Tags"};
+    universalKeys = {"AudioFile", "Title",         "TitleUnicode",
+                     "Artist",    "ArtistUnicode", "Creator",
+                     "Version",   "Tags",          "AbsoluteAudioPath"};
     registerMetaData("AudioFile", MetaType::string_, "audio.mp3");
     registerMetaData("Title", MetaType::string_, "mmm");
     registerMetaData("TitleUnicode", MetaType::string_, "mmm");
@@ -41,6 +42,7 @@ public:
     registerMetaData("ArtistUnicode", MetaType::string_, "Various Artists");
     registerMetaData("Creator", MetaType::string_, "...");
     registerMetaData("Version", MetaType::string_, "Normal");
+    registerMetaData("AbsoluteAudioPath", MetaType::string_, "");
     std::vector<std::variant<int, float, double, bool, std::string>> tags = {
         "mmm", " "};
     registerMetaData("Tags", MetaType::vector_, tags);
