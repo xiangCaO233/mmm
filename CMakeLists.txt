@@ -20,7 +20,7 @@ find_package(
   REQUIRED)
 
 include_directories(include src)
-set(SOURCES src/main.cpp)
+set(SOURCES src/main.cpp src/widget/MapCanvas.cpp)
 
 # 判断操作系统
 if(WIN32)
@@ -29,6 +29,8 @@ if(WIN32)
 elseif(APPLE)
   # macOS
   set(LIBRARY_SUFFIX ".dylib")
+  # 查找basslib
+  find_library(LIB_BASS NAMES lib PARTS)
 else()
   # Linux
   set(LIBRARY_SUFFIX ".so")
@@ -38,4 +40,4 @@ set(BASS_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/libbass${LIBRARY_SUFFIX}")
 
 add_executable(mmm ${SOURCES})
 target_link_libraries(mmm PUBLIC Qt::Core Qt::Widgets Qt::OpenGL
-                                 Qt::OpenGLWidgets)
+                                 Qt::OpenGLWidgets ${BASS_LIB_PATH})
