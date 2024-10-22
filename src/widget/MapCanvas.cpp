@@ -1,6 +1,8 @@
 #define GL_SILENCE_DEPRECATION
 #include "widget/MapCanvas.h"
+#if (__APPLE__)
 #include <OpenGL/OpenGL.h>
+#endif //__APPLE__
 
 // 初始化opengl画布
 MapCanvas::MapCanvas(QWidget *parent) : QOpenGLWidget(parent) {

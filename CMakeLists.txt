@@ -25,15 +25,19 @@ set(SOURCES src/main.cpp src/widget/MapCanvas.cpp)
 # 判断操作系统
 if(WIN32)
   # Windows
+	message("当前系统环境:Windows")
   set(LIBRARY_SUFFIX ".dll")
 elseif(APPLE)
   # macOS
   set(LIBRARY_SUFFIX ".dylib")
   # 查找basslib
+	message("当前系统环境:Macos")
   find_library(LIB_BASS NAMES lib PARTS)
 else()
   # Linux
+	message("当前系统环境:Linux")
   set(LIBRARY_SUFFIX ".so")
+  find_library(LIB_BASS NAMES lib PARTS)
 endif()
 
 set(BASS_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/libbass${LIBRARY_SUFFIX}")
